@@ -9,6 +9,7 @@ class Room {
          if (!newName.empty()) { _roomName = newName; }
          return _roomName; 
       }
+      void print(Player * p);
 };
 
 #endif
