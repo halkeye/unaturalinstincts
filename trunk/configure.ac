@@ -3,12 +3,12 @@
 
 AC_PREREQ(2.59)
 AC_INIT([unnatural_instincts], 0.1, [halkeye@gmail.com])
+AM_INIT_AUTOMAKE
 
 AC_CONFIG_SRCDIR([src])
-AC_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE
-AC_CONFIG_FILES([Makefile])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -25,4 +25,6 @@ AC_HEADER_TIME
 # Checks for library functions.
 AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([select])
+
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

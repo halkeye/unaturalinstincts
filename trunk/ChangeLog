@@ -1,3 +1,23 @@
+2006-01-29 20:20  halkeye
+
+	* trunk/src/Application.cpp, trunk/src/Makefile.am: working
+
+2006-01-29 19:24  halkeye
+
+	* trunk/AUTHORS, trunk/COPYING, trunk/ChangeLog, trunk/INSTALL, 
+	  trunk/NEWS, trunk/README, trunk/autogen.sh, trunk/configure.ac: 
+	  all the default files
+
+2006-01-29 19:19  halkeye
+
+	* trunk/Makefile.am, trunk/autogen.sh, trunk/configure.ac, 
+	  trunk/src/Makefile.am: initial commit - not quite working yet
+
+2006-01-29 19:14  halkeye
+
+	* trunk/configure.ac, trunk/src, trunk/src/Application.cpp: 
+	  initial commit
+
 2006-01-29 19:12  halkeye
 
 	* trunk: adding trunk
