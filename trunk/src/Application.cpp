@@ -30,7 +30,14 @@ class Player : public Connection {
    public:
       Player(int nfd) : fd(nfd) {}
       void onRead() {
-         write(fd, "hi\n", 3);
+         char buf[150];
+         int ret = read(fd, &buf, 151);
+         if (ret == 0) { 
+            /* Connection Dropped */
+         }
+         else if (ret == -1) {
+            perror("read");
+         }
       }
 };
 
@@ -49,6 +56,7 @@ class Application {
    public:
       void gameLoop();
       void onRead();
+      void onPulse();
       int makeSocket(int socktype);
       bool setNonBlocking(int fd);
 
@@ -77,7 +85,7 @@ void Application::gameLoop() {
         
       /* Update pulse called every second */
       if ( (time(0) - tTime) >= 1 /* second */ ) {
-         //UpdateHandler();
+         this->onPulse();
          tTime = time(0);
       }
 
@@ -195,5 +203,15 @@ bool Application::setNonBlocking(int fd)
 		return true;
    oldflags |= O_NONBLOCK;
 	return fcntl(fd, F_SETFL, oldflags);
+}
+
+void Application::onPulse() 
+{
+   Player * p;
+   std::set<Player *>::iterator iter;
+   for (iter = players.begin(); iter != players.end(); iter++) {
+      p = *iter;
+      write(p->fd, "This is a reset Message\n", 24);
+   }
 }
 
