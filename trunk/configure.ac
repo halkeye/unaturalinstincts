@@ -7,7 +7,7 @@ AC_INIT([unnatural_instincts], 0.1, [halkeye@gmail.com])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADER([config.h])
 
-AC_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE
 AC_CONFIG_FILES([Makefile])
 
 # Checks for programs.
