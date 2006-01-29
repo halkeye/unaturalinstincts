@@ -18,28 +18,7 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #endif
 
-class Connection {
-   public:
-      void close();
-};
-
-class Player : public Connection {
-   public:
-      int fd;
-
-   public:
-      Player(int nfd) : fd(nfd) {}
-      void onRead() {
-         char buf[150];
-         int ret = read(fd, &buf, 151);
-         if (ret == 0) { 
-            /* Connection Dropped */
-         }
-         else if (ret == -1) {
-            perror("read");
-         }
-      }
-};
+#include "Player.hpp"
 
 class Application {
    public:
@@ -107,7 +86,7 @@ void Application::gameLoop() {
 
       for (iter = players.begin(); iter != players.end(); iter++) {
          player = (Player *) *iter;
-         if (FD_ISSET(player->fd, &readFds)) {
+         if (FD_ISSET(player->fd(), &readFds)) {
             player->onRead();
          }
       }
@@ -211,7 +190,7 @@ void Application::onPulse()
    std::set<Player *>::iterator iter;
    for (iter = players.begin(); iter != players.end(); iter++) {
       p = *iter;
-      write(p->fd, "This is a reset Message\n", 24);
+      write(p->fd(), "This is a reset Message\n", 24);
    }
 }
 
