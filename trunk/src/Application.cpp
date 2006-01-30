@@ -14,11 +14,14 @@
 
 #include <set>
 
-#ifndef MAX
-#define MAX(a,b) ((a)>(b)?(a):(b))
+/* Can't use MAX as its used elesewhere */
+#ifndef MAX_RANGE
+#define MAX_RANGE(a,b) ((a)>(b)?(a):(b))
 #endif
 
 #include "Player.hpp"
+
+#define PULSE_RESET           3600
 
 class Application {
    public:
@@ -97,22 +100,21 @@ void Application::gameLoop() {
 void Application::onRead() {
    int new_fd;
    struct sockaddr_in stSa;
-   unsigned int iSaSize=sizeof(stSa);
+   //unsigned int iSaSize=sizeof(stSa);
+   socklen_t iSaSize=sizeof(stSa);
 
-   new_fd = accept(_control, (struct sockaddr*)&stSa, (socklen_t *)iSaSize);
+//new_fd = accept(_control, (struct sockaddr*)&stSa, (socklen_t *)iSaSize);
+   new_fd = accept(_control, (struct sockaddr*)&stSa, &iSaSize);
    if (new_fd < 0) {
       perror("accept()");
       throw("accept");
    }
    setNonBlocking(new_fd);
    FD_SET(new_fd, &_masterFds); 
-   _maxFds = MAX(_maxFds, new_fd+1);
+   _maxFds = MAX_RANGE(_maxFds, new_fd+1);
    Player * p = new Player(new_fd);
 	players.insert(p);
-}
-
-void Connection::close() {
-   /* Remove me from Appliaction->fds */
+   p->onConnect();
 }
 
 int main(int argc, char ** argv) {
@@ -186,11 +188,16 @@ bool Application::setNonBlocking(int fd)
 
 void Application::onPulse() 
 {
-   Player * p;
-   std::set<Player *>::iterator iter;
-   for (iter = players.begin(); iter != players.end(); iter++) {
-      p = *iter;
-      write(p->fd(), "This is a reset Message\n", 24);
+   static int resetPulse = PULSE_RESET;
+   if (resetPulse-- <= 0 ) {
+      std::string output("This is a reset Message\n");
+      Player * p;
+      std::set<Player *>::iterator iter;
+      for (iter = players.begin(); iter != players.end(); iter++) {
+         p = *iter;
+         p->send(output);
+      }
+      resetPulse = PULSE_RESET;
    }
 }
 
