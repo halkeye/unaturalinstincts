@@ -24,7 +24,7 @@ Room::Room()
    }
    
    if (_roomDescription.empty()) {
-      _roomDescription = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed aliquet. Curabitur nonummy, velit id dignissim posuere, ligula arcu ultrices erat, et interdum mi sem interdum lectus. Duis sodales, tortor congue tincidunt vehicula, ante orci varius pede, at fermentum nulla nulla pellentesque velit. Aliquam mi. Duis eros tortor, mollis vel, eleifend et, rhoncus ac, leo. Aenean vestibulum orci ac odio. Suspendisse a massa. Suspendisse potenti. Aenean eleifend, risus eget aliquet elementum, arcu quam lacinia nisi, at auctor eros lectus eu purus. Donec ultricies, orci vel laoreet fringilla, purus tortor interdum neque, sed tempor massa enim nec nibh. Duis gravida augue sit amet libero. Praesent id est id metus rutrum sagittis. Quisque mauris orci, tempus ut, porta non, tempus vitae, lectus. Vivamus non est. Cras in nisi. Donec vulputate neque vitae orci. Ut blandit, felis non congue lobortis, turpis ligula ullamcorper odio, auctor lobortis dui lectus vitae urna. Mauris faucibus urna a est.";
+      _roomDescription = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed aliquet. Curabitur nonummy, velit id dignissim posuere, ligula arcu ultrices erat, et interdum mi sem interdum lectus. Duis sodales, tortor congue tincidunt vehicula, ante orci varius pede, at fermentum nulla nulla pellentesque velit. Aliquam mi. Duis eros tortor, mollis vel, eleifend et, rhoncus ac, leo. Aenean vestibulum orci ac odio. Suspendisse a massa.";
    }
 }
       
