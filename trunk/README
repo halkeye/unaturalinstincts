@@ -4,3 +4,11 @@
 * Names?
    * Unnatural Selection
    * Vampires?
+
+* Code
+   * Find out if "FindAndReplace* is free to use
+
+* Todo
+   * Deal with player disconnects / quit - Gavin
+   * Group movement commands into one function
+   * load / save ( Greven ? )

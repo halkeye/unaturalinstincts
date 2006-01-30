@@ -14,6 +14,8 @@ class Player {
    public:
       Player(int nfd);
       int fd(int nfd = 0) { if (nfd > 0) { _fd = nfd; } return _fd; }
+
+      Room * room(Room * r = NULL) { if (r != NULL) _room = r; return _room; } 
       void onRead();
       void onConnect();
       void printRoom();
