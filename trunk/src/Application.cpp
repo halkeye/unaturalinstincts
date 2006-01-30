@@ -99,7 +99,7 @@ void Application::onRead() {
    struct sockaddr_in stSa;
    unsigned int iSaSize=sizeof(stSa);
 
-   new_fd = accept(_control, (struct sockaddr*)&stSa,&iSaSize);
+   new_fd = accept(_control, (struct sockaddr*)&stSa, (socklen_t *)iSaSize);
    if (new_fd < 0) {
       perror("accept()");
       throw("accept");

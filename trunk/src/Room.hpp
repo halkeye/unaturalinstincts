@@ -1,6 +1,8 @@
 #ifndef __UNRATURALINSTINCTS_ROOM_HPP_
 #define __UNRATURALINSTINCTS_ROOM_HPP_
 
+#include "Player.hpp"
+
 class Room {
    private:
       std::string _roomName;
