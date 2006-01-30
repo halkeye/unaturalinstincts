@@ -19,6 +19,13 @@
 #include "Application.hpp"
 #include "Player.hpp"
 
+#include "AnsiColors.hpp"
+	
+// http://pueblo.sourceforge.net/doc/manual/ansi_color_codes.html
+const char * AnsiColors::RESET = "\033[0m";
+const char * AnsiColors::RED = "\033[31m";
+const char * AnsiColors::BLUE = "\033[34m";
+
 Application * app = NULL;
 Application * getApplication() {
    return app;

@@ -8,6 +8,8 @@
 #include "Room.hpp"
 #include "Player.hpp"
 
+#include "AnsiColors.hpp"
+
 Player::Player(int nfd) 
 {
    _fd = nfd;
@@ -49,18 +51,23 @@ void Player::onRead() {
 }
 
 void Player::printRoom() {
-   std::string output = "";
+   std::string output = AnsiColors::RESET;
 
-   output += _room->name() + "\n\r";
+   output += AnsiColors::RED + _room->name() + AnsiColors::RESET + "\n\r";
+   output += AnsiColors::BLUE;
    for (unsigned int i = 0; i < _room->name().length(); i++) {
       output += "=";
    }
+   output += AnsiColors::RESET;
 
    output += "\n\r";
    output += _room->description();
    output += "\n\r\n\r";
    output += "Exits\n\r";
-   output += "=====\n\r";
+   output += AnsiColors::BLUE;
+   output += "=====";
+   output += AnsiColors::RESET;
+   output += "\n\r";
 
    for (int i = EXIT_NORTHWEST; i < EXIT_NONE; i++) {
       Exit * e = _room->getExit((eExitTypes)i);
