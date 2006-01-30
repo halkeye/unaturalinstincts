@@ -36,7 +36,46 @@ void Room::addExit(eExitTypes spot, Exit * e) {
    _exits[spot] = e;
 }
 
+void Room::addExit(eExitTypes spot, Room * r, bool biDirectional) {
+   Exit * e = new Exit();
+   e->room(r);
+   addExit(spot, e);
+
+   if (biDirectional) {
+      Exit * e2 = new Exit();
+      e2->room(this);
+      r->addExit(Exit::getOpposite(spot), e2);
+   }
+}
+
       
 Exit * Room::getExit(eExitTypes pos) {
    return _exits[pos];
+}
+   
+eExitTypes Exit::getOpposite(eExitTypes pos) {
+   switch (pos) {
+      case EXIT_NORTHWEST:
+         return EXIT_SOUTHEAST;
+      case EXIT_NORTH:
+         return EXIT_SOUTH;
+      case EXIT_NORTHEAST:
+         return EXIT_SOUTHWEST;
+      case EXIT_EAST:
+         return EXIT_WEST;
+
+      case EXIT_SOUTHEAST:
+         return EXIT_NORTHWEST;
+      case EXIT_SOUTH:
+         return EXIT_NORTH;
+      case EXIT_SOUTHWEST:
+         return EXIT_NORTHEAST;
+      case EXIT_WEST:
+         return EXIT_EAST;
+      case EXIT_OTHER:
+         return EXIT_OTHER;
+      default:
+         throw("Unknown exit type");
+         return EXIT_NONE;
+   }
 }

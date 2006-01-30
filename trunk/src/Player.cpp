@@ -11,7 +11,8 @@ Player::Player(int nfd)
 {
    _fd = nfd;
    _room = new Room();
-   _room->addExit(EXIT_NORTH, new Exit());
+   Room * r = new Room();
+   _room->addExit(EXIT_NORTH,r,true);
 }
 
 void Player::onRead() {

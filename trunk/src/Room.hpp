@@ -14,10 +14,15 @@ class Room;
 
 class Exit {
    public:
-      Room * room;
+      Room * _room;
 
    public:
       std::string name() { return std::string("moocow"); }
+      Room * room(Room * to = NULL) { if (to) _room = to; return _room; }
+
+   /* Static Functions */
+      static eExitTypes getOpposite(eExitTypes pos);
+
 };
 
 class Room {
@@ -41,6 +46,7 @@ class Room {
       }
 
       void addExit(eExitTypes spot, Exit * e);
+      void addExit(eExitTypes spot, Room * r, bool biDirectional);
       Exit * getExit(eExitTypes pos);
 };
 
