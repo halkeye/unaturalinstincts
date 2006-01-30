@@ -12,40 +12,33 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 
+#include <dlfcn.h>
+
 #include <set>
 
-/* Can't use MAX as its used elesewhere */
-#ifndef MAX_RANGE
-#define MAX_RANGE(a,b) ((a)>(b)?(a):(b))
-#endif
-
+#include "Application.hpp"
 #include "Player.hpp"
 
-#define PULSE_RESET           3600
+Application * app = NULL;
+Application * getApplication() {
+   return app;
+}
 
-class Application {
-   public:
-      Application(int port);
+int main(int argc, char ** argv) {
+   int port = 0;
 
-   private:
-      int _control; /* Main server connection */
-      fd_set _masterFds;
-      std::set<Player *> players;
-      int _maxFds;
-      bool shutdown;
-      int _port;
+   if (argc > 1) {
+      port = atoi(argv[1]);
+   }
+      
+   if (port == 0) { 
+      port = 10000;
+   }
+   app = new Application(port);
+   app->gameLoop();
+   return 0;
+}
 
-   public:
-      void gameLoop();
-      void onRead();
-      void onPulse();
-      int makeSocket(int socktype);
-      bool setNonBlocking(int fd);
-
-      int port() { return _port; }
-      int port(int nport) { _port = nport; return _port; }
-
-};
 
 void Application::gameLoop() {
    fd_set readFds;
@@ -117,21 +110,6 @@ void Application::onRead() {
    p->onConnect();
 }
 
-int main(int argc, char ** argv) {
-   int port = 0;
-
-   if (argc > 1) {
-      port = atoi(argv[1]);
-   }
-      
-   if (port == 0) { 
-      port = 10000;
-   }
-   Application * app = new Application(port);
-   app->gameLoop();
-   return 0;
-}
-
 int Application::makeSocket(int socktype) {
    int ret = socket(PF_INET, socktype, 0);
    if (ret < 0) {
@@ -145,6 +123,9 @@ Application::Application(int port) {
    int yes = 1;
    _port = port;
    _maxFds = 1;
+
+   /* open the needed object */
+   _dlHandle = dlopen(NULL, RTLD_NOW);
 
    _control = makeSocket(SOCK_STREAM);
    if (!_control) {
@@ -199,5 +180,19 @@ void Application::onPulse()
       }
       resetPulse = PULSE_RESET;
    }
+}
+
+DO_FUN * Application::getCommand(char *name)
+{
+   void * funHandle;
+   const char *error;
+
+   funHandle = dlsym(_dlHandle, name);
+   if ((error = dlerror()) != NULL)
+   {
+      fprintf(stderr,"Error locating %s in symbol table. %s\n\r", name, error);
+      return (DO_FUN *) cmdNotFound;
+   }
+   return (DO_FUN *) funHandle;
 }
 

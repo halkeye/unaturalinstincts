@@ -4,6 +4,7 @@
 /* read() */
 #include <unistd.h>
 
+#include "Application.hpp"
 #include "Room.hpp"
 #include "Player.hpp"
 
@@ -32,9 +33,18 @@ void Player::onRead() {
    std::string::size_type i = _inbuf.find ('\n');
    if (i != std::string::npos)
    {
-      std::string sLine = _inbuf.substr (0, i);  /* extract first line */
+      std::string sLine = _inbuf.substr (0, i-1);  /* extract first line */
       _inbuf.clear();
+
       // process sLine
+      DO_FUN * fptr = getApplication()->getCommand((char *)sLine.c_str());
+      if (fptr != cmdNotFound) {
+         fptr(this, std::string(""));
+      }
+      else {
+         std::string output("no such command found\n\r");
+         this->send(output);
+      }
    }
 }
 
