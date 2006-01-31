@@ -103,7 +103,6 @@ void Application::onRead() {
    //unsigned int iSaSize=sizeof(stSa);
    socklen_t iSaSize=sizeof(stSa);
 
-//new_fd = accept(_control, (struct sockaddr*)&stSa, (socklen_t *)iSaSize);
    new_fd = accept(_control, (struct sockaddr*)&stSa, &iSaSize);
    if (new_fd < 0) {
       perror("accept()");

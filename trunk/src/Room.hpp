@@ -17,7 +17,8 @@ class Exit {
       Room * _room;
 
    public:
-      std::string name() { return std::string("moocow"); }
+      Exit();
+      std::string roomName();
       Room * room(Room * to = NULL) { if (to) _room = to; return _room; }
 
    /* Static Functions */
@@ -32,8 +33,7 @@ class Room {
       Exit *      _exits[EXIT_NONE];
 
    public:
-      Room();
-      Room(std::string name);
+      Room(std::string name = "");
 
       std::string name(std::string newName = "") { 
          if (!newName.empty()) { _roomName = newName; }

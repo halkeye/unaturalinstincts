@@ -13,6 +13,7 @@
 Player::Player(int nfd) 
 {
    _fd = nfd;
+   _room = NULL;
    _room = new Room();
    Room * r = new Room();
    _room->addExit(EXIT_NORTH,r,true);
@@ -26,6 +27,7 @@ void Player::onRead() {
    }
    else if (ret == -1) {
       perror("read");
+      fflush(stderr);
       exit(1);
       return;
    }
@@ -52,6 +54,11 @@ void Player::onRead() {
 
 void Player::printRoom() {
    std::string output = AnsiColors::RESET;
+   if (!_room) {
+      output += "No room thingie\n\r";
+      this->send(output);
+      return;
+   }
 
    output += AnsiColors::RED + _room->name() + AnsiColors::RESET + "\n\r";
    output += AnsiColors::BLUE;
@@ -74,7 +81,7 @@ void Player::printRoom() {
       if (!e) {
          continue;
       }
-      output += "" + std::string(sExitTypes[i]) + " --- " + e->name() + "\n\r";
+      output += "" + std::string(sExitTypes[i]) + " --- " + e->roomName() + "\n\r";
    }
 
    this->send(output);

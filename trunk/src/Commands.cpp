@@ -3,14 +3,14 @@
 #include "Room.hpp"
 #include "Player.hpp"
 
-DECLARE_FUNC(cmdNotFound)
+CMDF cmdNotFound(Player * p, std::string arguments)
 {
    std::string output ("Huh?\n\r");
    p->send(output);
    return;
 }
 
-DECLARE_FUNC(north)
+CMDF north(Player * p, std::string arguments)
 {
    std::string output;
 
@@ -28,7 +28,7 @@ DECLARE_FUNC(north)
    return;
 }
 
-DECLARE_FUNC(south)
+CMDF south(Player * p, std::string arguments)
 {
    std::string output;
 

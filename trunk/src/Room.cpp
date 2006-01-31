@@ -8,19 +8,27 @@ const char * sExitTypes[EXIT_NONE] = {
    "other"
 };
 
-Room::Room(std::string name) 
-{
-   _roomName = name;
-   Room::Room();
-   for (int i = 0; i < EXIT_NONE; i++) {
-      _exits[i] = NULL;
-   }
+Exit::Exit() {
+   _room = NULL;
 }
 
-Room::Room() 
+std::string Exit::roomName() { 
+   if (!_room) { throw("A exit always have to have a room"); }
+   return _room->name();
+}
+
+Room::Room(std::string name) 
 {
+
+   for (int i = EXIT_NORTHWEST; i < EXIT_NONE; i++) {
+      _exits[i] = NULL;
+   }
+
    if (_roomName.empty()) {
       _roomName = "Unamed Room";
+   }
+   else {
+      _roomName = name;
    }
    
    if (_roomDescription.empty()) {
@@ -79,3 +87,4 @@ eExitTypes Exit::getOpposite(eExitTypes pos) {
          return EXIT_NONE;
    }
 }
+      

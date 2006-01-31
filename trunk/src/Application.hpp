@@ -21,8 +21,7 @@ class Player;
 
 typedef void DO_FUN(Player * ch, std::string argument);
 
-#define DECLARE_FUNC(name) CMDF ((name))(Player * p, std::string arguments)
-DECLARE_FUNC(cmdNotFound);
+CMDF cmdNotFound(Player * p, std::string arguments);
 
 class Application {
    public:
