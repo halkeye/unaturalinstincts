@@ -12,3 +12,7 @@
    * Deal with player disconnects / quit - Gavin
    * Group movement commands into one function
    * load / save ( Greven ? )
+
+* Only solid colors
+
+* Room flags / sector types change desc / room / exit colors
