@@ -13,6 +13,8 @@
 Player::Player(int nfd) 
 {
    _fd = nfd;
+   _state = CONN_CONNECTING;
+
    _room = NULL;
    _room = new Room();
    Room * r = new Room();

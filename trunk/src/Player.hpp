@@ -5,11 +5,22 @@
 
 class Room;
 
+
+enum eConnectionStates
+{
+   CONN_CONNECTING, CONN_GETNAME, CONN_PLAYING,
+
+   CONN_MAX
+};				/* ----------  end of enum eConnectionStates  ---------- */
+
+typedef enum eConnectionStates CONNECTIONSTATE;
+
 class Player {
    private:
       std::string _inbuf;
       int _fd;
       Room * _room;
+      CONNECTIONSTATE _state;
 
    public:
       Player(int nfd);
