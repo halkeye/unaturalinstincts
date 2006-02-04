@@ -1,3 +1,5 @@
+#include "config.h"
+
 /* According to POSIX 1003.1-2001 */
 #include <sys/select.h>
 
@@ -12,12 +14,12 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 
+#include <stdarg.h>
 #include <dlfcn.h>
-
-#include <set>
 
 #include "Application.hpp"
 #include "Player.hpp"
+#include "Room.hpp"
 
 #include "AnsiColors.hpp"
 	
@@ -31,6 +33,7 @@ Application * getApplication() {
    return app;
 }
 
+Room * room1, * room2;
 int main(int argc, char ** argv) {
    int port = 0;
 
@@ -41,10 +44,54 @@ int main(int argc, char ** argv) {
    if (port == 0) { 
       port = 10000;
    }
+
+   debug("Pre New Application");
+   room1 = new Room();
+   room2 = new Room();
+   room1->addExit(EXIT_NORTH,room2,true);
    app = new Application(port);
+   debug("Post New Application");
    app->gameLoop();
    return 0;
 }
+
+void status(const char * msg, ...) {
+   va_list   param;
+   printf("%s[%sSTATUS%s]%s ",
+         AnsiColors::RED, AnsiColors::BLUE,
+         AnsiColors::RED, AnsiColors::RESET);
+
+   va_start(param, msg);
+   vprintf(msg, param);
+   va_end(param);
+   printf("\n");
+}
+
+void error(const char * msg, ...) {
+   va_list   param;
+   printf("%s[%sERROR%s]%s ",
+         AnsiColors::RED, AnsiColors::BLUE,
+         AnsiColors::RED, AnsiColors::RESET);
+
+   va_start(param, msg);
+   vprintf(msg, param);
+   va_end(param);
+   printf("\n");
+}
+
+void debug(const char * msg, ...) {
+   va_list   param;
+   printf("%s[%sDEBUG%s]%s ",
+         AnsiColors::RED, AnsiColors::BLUE,
+         AnsiColors::RED, AnsiColors::RESET);
+
+   va_start(param, msg);
+   vprintf(msg, param);
+   va_end(param);
+   printf("\n");
+
+}
+   
 
 
 void Application::gameLoop() {
@@ -53,13 +100,24 @@ void Application::gameLoop() {
    time_t tTime = 0;
    struct timeval tv;
    Player * player;
-   std::set<Player *>::iterator iter;
+   PLAYERLIST::iterator iter;
 
    shutdown = false;
    FD_ZERO(&readFds);
    FD_SET(_control,&_masterFds);
 
    while (!shutdown) {
+      if (!closed.empty()) {
+         for (iter = closed.begin(); iter != closed.end(); iter++) {
+            player = *iter;
+            players.remove(player);
+            FD_CLR(player->fd(),&_masterFds);
+            close(player->fd());
+            delete player;
+         }
+         closed.clear();
+      }
+
       memcpy(&readFds,&_masterFds,sizeof(readFds));
 
       tv.tv_sec = 1;
@@ -93,6 +151,7 @@ void Application::gameLoop() {
             player->onRead();
          }
       }
+      
    }
    return;
 }
@@ -112,7 +171,7 @@ void Application::onRead() {
    FD_SET(new_fd, &_masterFds); 
    _maxFds = MAX_RANGE(_maxFds, new_fd+1);
    Player * p = new Player(new_fd);
-	players.insert(p);
+	players.push_back(p);
    p->onConnect();
 }
 
@@ -162,6 +221,7 @@ Application::Application(int port) {
 
    FD_ZERO(&_masterFds);
    FD_SET(_control, &_masterFds);
+   status("Listening using fd %d on %d", _control, port);
 }
 
 bool Application::setNonBlocking(int fd)
@@ -179,7 +239,7 @@ void Application::onPulse()
    if (resetPulse-- <= 0 ) {
       std::string output("This is a reset Message\n");
       Player * p;
-      std::set<Player *>::iterator iter;
+      PLAYERLIST::iterator iter;
       for (iter = players.begin(); iter != players.end(); iter++) {
          p = *iter;
          p->send(output);
@@ -196,9 +256,13 @@ DO_FUN * Application::getCommand(char *name)
    funHandle = dlsym(_dlHandle, name);
    if ((error = dlerror()) != NULL)
    {
-      fprintf(stderr,"Error locating %s in symbol table. %s\n\r", name, error);
+      debug("Error locating %s in symbol table. %s\n\r", name, error);
       return (DO_FUN *) cmdNotFound;
    }
    return (DO_FUN *) funHandle;
 }
 
+bool Application::queueRemove(Player * p) {
+	closed.push_back(p);
+   return true;
+}

@@ -2,7 +2,7 @@
 #define __UNRATURALINSTINCTS_APPLICATION_HPP_
 
 #include <string>
-#include <set>
+#include "Types.hpp"
 
 /* Can't use MAX as its used elesewhere */
 #ifndef MAX_RANGE
@@ -23,6 +23,10 @@ typedef void DO_FUN(Player * ch, std::string argument);
 
 CMDF cmdNotFound(Player * p, std::string arguments);
 
+void status(const char *,...);
+void error(const char *,...);
+void debug(const char *,...);
+
 class Application {
    public:
       Application(int port);
@@ -30,7 +34,8 @@ class Application {
    private:
       int _control; /* Main server connection */
       fd_set _masterFds;
-      std::set<Player *> players;
+      PLAYERLIST players;
+      PLAYERLIST closed;
       int _maxFds;
       bool shutdown;
       int _port;
@@ -47,9 +52,17 @@ class Application {
       int port(int nport) { _port = nport; return _port; }
 
       DO_FUN *getCommand(char *name);
+   
+
+   public:
+      bool queueRemove(Player *);
 
 };
 
 extern Application * getApplication();
+class Room;
+
+extern Room * room1;
+extern Room * room2;
 
 #endif

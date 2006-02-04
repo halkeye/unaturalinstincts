@@ -1,6 +1,10 @@
+#include "config.h"
+
 #include <string>
 
 #include "Room.hpp"
+#include "Player.hpp"
+#include "AnsiColors.hpp"
 
 const char * sExitTypes[EXIT_NONE] = {
    "northwest", "north", "northeast", "east",
@@ -8,14 +12,32 @@ const char * sExitTypes[EXIT_NONE] = {
    "other"
 };
 
+/*
+   _____      _ _   
+  | ____|_  _(_) |_ 
+  |  _| \ \/ / | __|
+  | |___ >  <| | |_ 
+  |_____/_/\_\_|\__|
+                    
+*/
+
 Exit::Exit() {
    _room = NULL;
 }
 
-std::string Exit::roomName() { 
+const std::string Exit::roomName() const { 
    if (!_room) { throw("A exit always have to have a room"); }
    return _room->name();
 }
+
+/*
+   ____                       
+  |  _ \ ___   ___  _ __ ___  
+  | |_) / _ \ / _ \| '_ ` _ \ 
+  |  _ < (_) | (_) | | | | | |
+  |_| \_\___/ \___/|_| |_| |_|
+                              
+*/
 
 Room::Room(std::string name) 
 {
@@ -57,7 +79,7 @@ void Room::addExit(eExitTypes spot, Room * r, bool biDirectional) {
 }
 
       
-Exit * Room::getExit(eExitTypes pos) {
+Exit * Room::getExit(eExitTypes pos) const {
    return _exits[pos];
 }
    
@@ -87,4 +109,74 @@ eExitTypes Exit::getOpposite(eExitTypes pos) {
          return EXIT_NONE;
    }
 }
-      
+
+void Room::addPlayer(Player * p, bool silent) {
+   _charactersInRoom.push_back(p);
+   if (!silent) {
+      std::string leavestr;
+      /* Fix me.. direction? */
+      leavestr = p->name() + " has entered the room\n";
+      this->echo(leavestr,p);
+   }
+}
+void Room::removePlayer(Player * p, bool silent) {
+   _charactersInRoom.remove(p);
+   if (!silent) {
+      std::string leavestr;
+      /* Fix me.. direction? */
+      leavestr = p->name() + " has left the room\n";
+      this->echo(leavestr,p);
+   }
+}
+
+void Room::echo(std::string str, Player * playerToSkip) {
+   Player * player;
+   PLAYERLIST::const_iterator iter;
+   for (iter = _charactersInRoom.begin(); iter != _charactersInRoom.end(); iter++) {
+      player = (Player *) *iter;
+      if (playerToSkip != NULL && player != playerToSkip) {
+         player->send(str);
+      }
+   }
+}
+
+void Room::showToPlayer(Player * p) const {
+
+   std::string output = AnsiColors::RESET;
+
+   output += AnsiColors::RED + _roomName + AnsiColors::RESET + "\n\r";
+   output += AnsiColors::BLUE;
+   for (unsigned int i = 0; i < _roomName.length(); i++) {
+      output += "=";
+   }
+   output += AnsiColors::RESET;
+
+   output += "\n\r";
+   output += _roomDescription;
+   output += "\n\r\n\r";
+   output += "Exits\n\r";
+   output += AnsiColors::BLUE;
+   output += "=====";
+   output += AnsiColors::RESET;
+   output += "\n\r";
+
+   for (int i = EXIT_NORTHWEST; i < EXIT_NONE; i++) {
+      const Exit * e = this->getExit((eExitTypes)i);
+      if (!e) {
+         continue;
+      }
+      output += "" + std::string(sExitTypes[i]) + " --- " + e->roomName() + "\n\r";
+   }
+
+   output += AnsiColors::RESET;
+
+   PLAYERLIST::const_iterator iter = _charactersInRoom.begin();
+   Player * player;
+   for ( ; iter != _charactersInRoom.end(); iter++) {
+      player = *iter;
+      if (player == p) { continue; }
+      output += player->name() + " is here\n\r";
+   }
+   p->send(output);
+}
+

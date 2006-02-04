@@ -1,3 +1,5 @@
+#include "config.h"
+
 /* Perror */
 #include <stdio.h>
 
@@ -15,10 +17,9 @@ Player::Player(int nfd)
    _fd = nfd;
    _state = CONN_CONNECTING;
 
-   _room = NULL;
-   _room = new Room();
-   Room * r = new Room();
-   _room->addExit(EXIT_NORTH,r,true);
+   _room = room1;
+   if (_room) 
+      _room->addPlayer(this);
 }
 
 void Player::onRead() {
@@ -26,6 +27,8 @@ void Player::onRead() {
    ssize_t ret = read(_fd, &buf, 1000);
    if (ret == 0) { 
       /* Connection Dropped */
+      close();
+      return;
    }
    else if (ret == -1) {
       perror("read");
@@ -54,47 +57,14 @@ void Player::onRead() {
    }
 }
 
-void Player::printRoom() {
-   std::string output = AnsiColors::RESET;
-   if (!_room) {
-      output += "No room thingie\n\r";
-      this->send(output);
-      return;
-   }
-
-   output += AnsiColors::RED + _room->name() + AnsiColors::RESET + "\n\r";
-   output += AnsiColors::BLUE;
-   for (unsigned int i = 0; i < _room->name().length(); i++) {
-      output += "=";
-   }
-   output += AnsiColors::RESET;
-
-   output += "\n\r";
-   output += _room->description();
-   output += "\n\r\n\r";
-   output += "Exits\n\r";
-   output += AnsiColors::BLUE;
-   output += "=====";
-   output += AnsiColors::RESET;
-   output += "\n\r";
-
-   for (int i = EXIT_NORTHWEST; i < EXIT_NONE; i++) {
-      Exit * e = _room->getExit((eExitTypes)i);
-      if (!e) {
-         continue;
-      }
-      output += "" + std::string(sExitTypes[i]) + " --- " + e->roomName() + "\n\r";
-   }
-
-   this->send(output);
-}
-
 void Player::send(std::string &str)
 {
    ssize_t ret = write(fd(), (char *) str.c_str(), str.length());
    /* Fixme ALOT */
    if (ret == 0) { 
       /* Connection Dropped */
+      close();
+      return;
    }
    else if (ret == -1) {
       perror("read");
@@ -105,10 +75,35 @@ void Player::onConnect() {
    /* Do the stuff that is needed to be done when a player connects */
 
    /* Setup connection status */
-   printRoom();
+   _room->showToPlayer(this);
 }
 
+/**
+ * @brief Closes a player connection
+ **/
 void Player::close() {
    /* Remove me from Appliaction->fds */
+   getApplication()->queueRemove(this);
 }
+
+/**
+ * @brief room
+ *
+ * Gets / Sets the room for a player
+ *
+ * @param r (optional) New room for the player
+ *
+ * @return room the player is currently in
+ **/
+      
+const Room * Player::room(Room * r) {
+   if (r != NULL) {
+      if (_room != NULL) {
+         _room->removePlayer(this);
+      }
+      _room = r;
+      _room->addPlayer(this);
+   }
+   return _room; 
+} 
 

@@ -1,3 +1,63 @@
+2006-01-30 06:47  halkeye
+
+	* trunk/README, trunk/src/Commands.cpp, trunk/src/Player.hpp: 
+	  north / south works
+
+2006-01-30 06:30  halkeye
+
+	* trunk/src/Application.cpp, trunk/src/Application.hpp, 
+	  trunk/src/Commands.cpp, trunk/src/Makefile.am, 
+	  trunk/src/Player.cpp: starting command tree
+
+2006-01-30 05:17  halkeye
+
+	* trunk/src/Player.cpp, trunk/src/Room.cpp, trunk/src/Room.hpp: 
+	  Exits
+
+2006-01-30 03:25  halkeye
+
+	* trunk/src/Application.cpp, trunk/src/Player.cpp, 
+	  trunk/src/Player.hpp, trunk/src/Room.cpp, trunk/src/Room.hpp: 
+	  starting room stuff
+
+2006-01-30 02:26  greven
+
+	* trunk/src/Application.cpp, trunk/src/Room.cpp, 
+	  trunk/src/Room.hpp: Corrected signed/unsiged error in 
+	  Application.cpp
+	  Removed print command from Room.cpp
+	  Added include in Room.hpp
+
+2006-01-29 22:58  halkeye
+
+	* trunk/src/Room.cpp, trunk/src/Room.hpp: one of the few times 
+	  i'll commit untested code
+	  since eclipse sucks, and I havn't installed cygwin yet	
+
+2006-01-29 22:23  halkeye
+
+	* trunk/README, trunk/src/Makefile.am: Adding stuff to readme
+
+2006-01-29 21:14  halkeye
+
+	* trunk/scripts, trunk/scripts/debugmake: Adding debug make
+
+2006-01-29 21:10  halkeye
+
+	* trunk/ChangeLog, trunk/Makefile.am, trunk/configure.ac: Adding 
+	  room and seperating player into its own file
+
+2006-01-29 21:07  halkeye
+
+	* trunk/src/Application.cpp, trunk/src/Makefile.am, 
+	  trunk/src/Player.cpp, trunk/src/Player.hpp: Adding room and 
+	  seperating player into its own file
+
+2006-01-29 20:54  halkeye
+
+	* trunk/src/Application.cpp, trunk/src/Makefile.am, 
+	  trunk/src/Room.cpp, trunk/src/Room.hpp: Rooms
+
 2006-01-29 20:20  halkeye
 
 	* trunk/src/Application.cpp, trunk/src/Makefile.am: working

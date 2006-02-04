@@ -24,15 +24,16 @@ class Player {
 
    public:
       Player(int nfd);
-      int fd(int nfd = 0) { if (nfd > 0) { _fd = nfd; } return _fd; }
+      int fd() const { return _fd; }
 
-      Room * room(Room * r = NULL) { if (r != NULL) _room = r; return _room; } 
+      const Room * room(Room * r = NULL);
       void onRead();
       void onConnect();
-      void printRoom();
       
       void close();
       void send(std::string &str);
+
+      const std::string name() { std::string name("Player"); return name; }
 };
 
 #endif

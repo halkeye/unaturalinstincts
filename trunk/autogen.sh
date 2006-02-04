@@ -1,69 +1,113 @@
 #!/bin/sh
-#
-# autogen.sh glue for hplip
-#
-# HPLIP used to have five or so different autotools trees.  Upstream
-# has reduced it to two.  Still, this script is capable of cleaning
-# just about any possible mess of autoconf files.
-#
-# BE CAREFUL with trees that are not completely automake-generated,
-# this script deletes all Makefile.in files it can find.
-#
-# Requires: automake 1.9, autoconf 2.57+
-# Conflicts: autoconf 2.13
-set -e
+# Run this to set up the build system: configure, makefiles, etc.
+# (based on the version in enlightenment's cvs)
 
-# Refresh GNU autotools toolchain.
-echo Cleaning autotools files...
-find -type d -name autom4te.cache -print0 | xargs -0 rm -rf \;
-find -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
-	-o -name depcomp -o -name ltmain.sh -o -name configure \
-	-o -name config.sub -o -name config.guess \
-	-o -name Makefile.in \) -print0 | xargs -0 rm -f
+package="libshout"
 
-echo Running autoreconf...
-autoreconf --force --install
+olddir=`pwd`
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
 
-# For the Debian package build
-test -d debian && {
-	# link these in Debian builds
-	rm -f config.sub config.guess
-	ln -s /usr/share/misc/config.sub .
-	ln -s /usr/share/misc/config.guess .
+cd "$srcdir"
+DIE=0
 
-	# refresh list of executable scripts, to avoid possible breakage if
-	# upstream tarball does not include the file or if it is mispackaged
-	# for whatever reason.
-	[ "$1" == "updateexec" ] && {
-		echo Generating list of executable files...
-		rm -f debian/executable.files
-		find -type f -perm +111 ! -name '.*' -fprint debian/executable.files
-	}
+(autoconf --version) < /dev/null > /dev/null 2>&1 || {
+        echo
+        echo "You must have autoconf installed to compile $package."
+        echo "Download the appropriate package for your distribution,"
+        echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+        DIE=1
+}
+VERSIONGREP="sed -e s/.*[^0-9\.]\([0-9]\.[0-9]\).*/\1/"
+                                                                                
+# do we need automake?
+if test -r Makefile.am; then
+    echo Checking for automake version
+    options=`fgrep AUTOMAKE_OPTIONS Makefile.am`
+    AM_NEEDED=`echo "$options" | $VERSIONGREP`
+    AM_PROGS=automake
+    AC_PROGS=aclocal
+    if test -n "$AM_NEEDED" && test "x$AM_NEEDED" != "x$options"
+    then
+        AM_PROGS="automake-$AM_NEEDED automake$AM_NEEDED $AM_PROGS"
+        AC_PROGS="aclocal-$AM_NEEDED aclocal$AM_NEEDED $AC_PROGS"
+    else
+        AM_NEEDED=""
+    fi
+    AM_PROGS="$AUTOMAKE $AM_PROGS"
+    AC_PROGS="$ACLOCAL $AC_PROGS"
+    for am in $AM_PROGS; do
+      ($am --version > /dev/null 2>&1) 2>/dev/null || continue
+      ver=`$am --version | head -1 | $VERSIONGREP`
+      AWK_RES=`echo $ver $AM_NEEDED | awk '{ if ( $1 >= $2 ) print "yes"; else print "no" }'`
+      if test "$AWK_RES" = "yes"; then
+        AUTOMAKE=$am
+        echo "  found $AUTOMAKE"
+        break
+      fi
+    done
+    for ac in $AC_PROGS; do
+      ($ac --version > /dev/null 2>&1) 2>/dev/null || continue
+      ver=`$ac --version < /dev/null | head -1 | $VERSIONGREP`
+      AWK_RES=`echo $ver $AM_NEEDED | awk '{ if ( $1 >= $2 ) print "yes"; else print "no" }'`
+      if test "$AWK_RES" = "yes"; then
+        ACLOCAL=$ac
+        echo "  found $ACLOCAL"
+        break
+      fi
+    done
+    test -z $AUTOMAKE || test -z $ACLOCAL && {
+        echo
+        if test -n "$AM_NEEDED"; then
+            echo "You must have automake version $AM_NEEDED installed"
+            echo "to compile $package."
+        else
+            echo "You must have automake installed to compile $package."
+        fi
+        echo "Download the appropriate package for your distribution,"
+        echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+        DIE=1
+      }
+fi
 
-	# Remove any files in upstream tarball that we don't have in the Debian
-	# package (because diff cannot remove files)
-	version=`dpkg-parsechangelog | awk '/Version:/ { print $2 }' | sed -e 's/-[^-]\+$//'`
-	source=`dpkg-parsechangelog | awk '/Source:/ { print $2 }' | tr -d ' '`
-	if test -r ../${source}_${version}.orig.tar.gz ; then
-		echo Generating list of files that should be removed...
-		rm -f debian/deletable.files
-		touch debian/deletable.files
-		[ -e debian/tmp ] && rm -rf debian/tmp
-		mkdir debian/tmp
-		( cd debian/tmp ; tar -zxf ../../../${source}_${version}.orig.tar.gz )
-		find debian/tmp/ -type f ! -name '.*' -print0 | xargs -0 -ri echo '{}' | \
-		  while read -r i ; do
-			if test -e "${i}" ; then
-				filename=$(echo "${i}" | sed -e 's#.*debian/tmp/[^/]\+/##')
-				test -e "${filename}" || echo "${filename}" >>debian/deletable.files
-			fi
-		  done
-		rm -fr debian/tmp
-	else
-		echo Emptying list of files that should be deleted...
-		rm -f debian/deletable.files
-		touch debian/deletable.files
-	fi
+(libtoolize --version)  > /dev/null 2>&1 || {
+	echo
+	echo "You must have libtool installed to compile $package."
+	echo "Download the appropriate package for your system,"
+	echo "or get the source from one of the GNU ftp sites"
+	echo "listed in http://www.gnu.org/order/ftp.html"
+	DIE=1
 }
 
-exit 0
+if test "$DIE" -eq 1; then
+        exit 1
+fi
+
+echo "Generating configuration files for $package, please wait...."
+
+ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I m4"
+if test -n "$ACLOCAL"; then
+  echo "  $ACLOCAL $ACLOCAL_FLAGS"
+  $ACLOCAL $ACLOCAL_FLAGS
+fi
+
+echo "  autoheader"
+autoheader
+
+echo "  libtoolize --automake"
+libtoolize --automake
+
+if test -n "$AUTOMAKE"; then
+  echo "  $AUTOMAKE --add-missing"
+  $AUTOMAKE --add-missing 
+fi
+
+echo "  autoconf"
+autoconf
+
+if test -z "$*"; then
+        echo "I am going to run ./configure with no arguments - if you wish "
+        echo "to pass any to it, please specify them on the $0 command line."
+fi
+cd $olddir
+$srcdir/configure "$@" && echo

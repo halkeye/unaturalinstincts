@@ -4,6 +4,8 @@
 AC_PREREQ(2.59)
 AC_INIT([unnatural_instincts], 0.1, [halkeye@gmail.com])
 AM_INIT_AUTOMAKE
+# autobuild
+AB_INIT
 
 AC_CONFIG_SRCDIR([src])
 AM_CONFIG_HEADER(config.h)
@@ -15,10 +17,17 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_RANLIB
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
+AC_CXX_HAVE_STL
+AC_CXX_HAVE_EXT_SLIST
+
+if test "$ac_cv_cxx_have_stl" = no; then
+  AC_MSG_ERROR([at least one implementation of STL is required])
+fi
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h netinet/in.h sys/socket.h sys/time.h unistd.h])
@@ -36,8 +45,12 @@ AC_CHECK_LIB([dl], [dlopen],
 # Checks for library functions.
 AC_HEADER_STDC
 AC_FUNC_SELECT_ARGTYPES
+
+# Check for Functions
 AC_CHECK_FUNCS([select socket])
 
-AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+AC_ARG_WITH(crypt,[  --with-crypt,       enabling ecrypting password support])
+AC_COND_WITH(crypt,no)
+# Output Make Files
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <string>
 #include "Application.hpp"
 #include "Room.hpp"
@@ -5,6 +7,7 @@
 
 CMDF cmdNotFound(Player * p, std::string arguments)
 {
+   arguments = "";
    std::string output ("Huh?\n\r");
    p->send(output);
    return;
@@ -13,8 +16,9 @@ CMDF cmdNotFound(Player * p, std::string arguments)
 CMDF north(Player * p, std::string arguments)
 {
    std::string output;
+   arguments = "";
 
-   Room * r = p->room();
+   const Room * r = p->room();
    Exit * e = r->getExit(EXIT_NORTH);
 
    if (!e) {
@@ -24,15 +28,16 @@ CMDF north(Player * p, std::string arguments)
    }
 
    p->room(e->room());
-   p->printRoom();
+   p->room()->showToPlayer(p);
    return;
 }
 
 CMDF south(Player * p, std::string arguments)
 {
    std::string output;
+   arguments = "";
 
-   Room * r = p->room();
+   const Room * r = p->room();
    Exit * e = r->getExit(EXIT_SOUTH);
 
    if (!e) {
@@ -42,6 +47,21 @@ CMDF south(Player * p, std::string arguments)
    }
 
    p->room(e->room());
-   p->printRoom();
+   p->room()->showToPlayer(p);
    return;
+}
+
+CMDF quit(Player * p, std::string arguments)
+{
+   arguments = "";
+   std::string output;
+   output = "Quitting\n";
+   p->send(output);
+   p->close();
+}
+
+CMDF look(Player * p, std::string arguments)
+{
+   arguments = "";
+   p->room()->showToPlayer(p);
 }
