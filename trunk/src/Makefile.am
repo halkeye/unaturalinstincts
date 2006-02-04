@@ -10,4 +10,5 @@ unaturalinstincts_SOURCES = Application.cpp Room.cpp Player.cpp \
 			    Commands.cpp
 
 #unaturalinstincts_LDADD   = -ldl
-unaturalinstincts_LDFLAGS = -export-dynamic
+unaturalinstincts_LDFLAGS = -export-all
+#unaturalinstincts_LDFLAGS = -export-dynamic
