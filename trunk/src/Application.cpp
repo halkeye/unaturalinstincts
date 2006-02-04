@@ -24,9 +24,23 @@
 #include "AnsiColors.hpp"
 	
 // http://pueblo.sourceforge.net/doc/manual/ansi_color_codes.html
-const char * AnsiColors::RESET = "\033[0m";
-const char * AnsiColors::RED = "\033[31m";
-const char * AnsiColors::BLUE = "\033[34m";
+const char * AnsiColors::RESET        = "\033[0m";
+const char * AnsiColors::BLACK        = "\033[30m";
+const char * AnsiColors::DARK_RED     = "\033[31m";
+const char * AnsiColors::DARK_GREEN   = "\033[32m";
+const char * AnsiColors::BROWN        = "\033[33m";
+const char * AnsiColors::DARK_BLUE    = "\033[34m";
+const char * AnsiColors::PURPLE       = "\033[35m";
+const char * AnsiColors::CYAN         = "\033[36m";
+const char * AnsiColors::GREY         = "\033[37m";
+const char * AnsiColors::DEFAULT      = "\033[39m";
+const char * AnsiColors::RED          = "\033[1;31m";
+const char * AnsiColors::GREEN        = "\033[1;32m";
+const char * AnsiColors::YELLOW       = "\033[1;33m";
+const char * AnsiColors::BLUE         = "\033[1;34m";
+const char * AnsiColors::PINK         = "\033[1;35m";
+const char * AnsiColors::LIGHT_BLUE   = "\033[1;36m";
+const char * AnsiColors::WHITE        = "\033[1;37m";
 
 Application * app = NULL;
 Application * getApplication() {
