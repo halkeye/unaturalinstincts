@@ -55,7 +55,7 @@ class Room {
       Exit * getExit(eExitTypes pos) const;
       void addPlayer(Player * p, bool silent=false) ;
       void removePlayer(Player * p, bool silent=false) ;
-      void echo(std::string str, Player * playerToSkip = NULL);
+      void echo(std::string str, const Player * playerToSkip = NULL);
       void showToPlayer( Player * p) const;
 };
 

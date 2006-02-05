@@ -21,6 +21,7 @@
 #include "Player.hpp"
 #include "Room.hpp"
 
+#include "Commands.hpp"
 #include "AnsiColors.hpp"
 	
 // http://pueblo.sourceforge.net/doc/manual/ansi_color_codes.html
@@ -48,6 +49,7 @@ Application * getApplication() {
 }
 
 Room * room1, * room2;
+
 int main(int argc, char ** argv) {
    int port = 0;
 
@@ -60,10 +62,14 @@ int main(int argc, char ** argv) {
    }
 
    debug("Pre New Application");
+
    room1 = new Room();
    room2 = new Room();
    room1->addExit(EXIT_NORTH,room2,true);
+
    app = new Application(port);
+   Command::initCommands();
+
    debug("Post New Application");
    app->gameLoop();
    return 0;
@@ -262,12 +268,15 @@ void Application::onPulse()
    }
 }
 
-DO_FUN * Application::getCommand(char *name)
+DO_FUN * Application::getCommand(const char *name)
 {
-   void * funHandle;
+   //void * funHandle;
+   DO_FUN * funHandle;
+
    const char *error;
 
-   funHandle = dlsym(_dlHandle, name);
+   funHandle = (DO_FUN *) dlsym(_dlHandle, name);
+
    if ((error = dlerror()) != NULL)
    {
       debug("Error locating %s in symbol table. %s\n\r", name, error);

@@ -11,6 +11,7 @@
 #include "Player.hpp"
 
 #include "AnsiColors.hpp"
+#include "Commands.hpp"
 
 Player::Player(int nfd) 
 {
@@ -42,18 +43,34 @@ void Player::onRead() {
    std::string::size_type i = _inbuf.find ('\n');
    if (i != std::string::npos)
    {
-      std::string sLine = _inbuf.substr (0, i-1);  /* extract first line */
+      std::string::size_type space = _inbuf.find (' ');
+
+      std::string cmd;
+      std::string arguments;
+      if (space != std::string::npos) {
+         cmd = _inbuf.substr (0, space);  /* extract first line */
+         /* Need a reusable function to translate spaces -> array of args */
+         arguments = _inbuf.substr (space+1, i-1);  /* extract first line */
+      }
+      else {
+         cmd = _inbuf.substr (0, i-1);  /* extract first line */
+         arguments = "";
+      }
+
       _inbuf.clear();
 
       // process sLine
-      DO_FUN * fptr = getApplication()->getCommand((char *)sLine.c_str());
-      if (fptr != cmdNotFound) {
-         fptr(this, std::string(""));
+      Command * command = Command::getCommand(cmd);
+      if (command) {
+         debug("Command found");
+         DO_FUN * fptr = command->doCode;
+         if (fptr != cmdNotFound) {
+            fptr(this, arguments);
+            return;
+         }
       }
-      else {
-         std::string output("no such command found\n\r");
-         this->send(output);
-      }
+      std::string output("no such command found\n\r");
+      this->send(output);
    }
 }
 

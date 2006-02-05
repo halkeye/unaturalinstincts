@@ -37,6 +37,21 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_HEADER_TIME
 
+AC_CANONICAL_HOST
+
+AC_MSG_CHECKING([for some Win32 platform])
+case "$host" in
+  *-*-mingw*|*-*-cygwin*)
+    platform_win32=yes
+    ;;
+  *)
+    platform_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$platform_win32])
+AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
+
+
 # Do we need to use -ldl?
 AC_CHECK_LIB([dl], [dlopen], 
              LDADD="$LDADD -ldl",
@@ -51,6 +66,18 @@ AC_CHECK_FUNCS([select socket])
 
 AC_ARG_WITH(crypt,[  --with-crypt,       enabling ecrypting password support])
 AC_COND_WITH(crypt,no)
+
+# doxygen
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN(unaturalinstincts, doxygen.cfg, doxygen)
+
 # Output Make Files
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

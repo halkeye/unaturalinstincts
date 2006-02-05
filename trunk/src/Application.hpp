@@ -51,7 +51,7 @@ class Application {
       int port() { return _port; }
       int port(int nport) { _port = nport; return _port; }
 
-      DO_FUN *getCommand(char *name);
+      DO_FUN *getCommand(const char *name);
    
 
    public:

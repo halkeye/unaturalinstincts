@@ -10,5 +10,8 @@ unaturalinstincts_SOURCES = Application.cpp Room.cpp Player.cpp \
 			    Commands.cpp
 
 #unaturalinstincts_LDADD   = -ldl
+if PLATFORM_WIN32 
 unaturalinstincts_LDFLAGS = -export-all
-#unaturalinstincts_LDFLAGS = -export-dynamic
+else
+unaturalinstincts_LDFLAGS = -export-dynamic
+endif
