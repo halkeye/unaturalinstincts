@@ -4,6 +4,8 @@
 #include <string>
 #include "Types.hpp"
 
+#include "AnsiColors.hpp"
+
 #include "Application.hpp"
 #include "Room.hpp"
 #include "Player.hpp"
@@ -14,7 +16,6 @@ COMMANDHASH cmds;
 void Command::initCommands() {
    Command * cmd;
    {
-      debug("Adding look command");
       cmd = new Command;
       cmd->code("look");
       cmd->addAlias("l");
@@ -41,6 +42,11 @@ void Command::initCommands() {
       cmds.insert(std::make_pair("say", cmd));
    }
 
+   {
+      cmd = new Command;
+      cmd->code("quit");
+      cmds.insert(std::make_pair("quit", cmd));
+   }
 
 }
      
@@ -75,7 +81,8 @@ void Command::code(const char * cmdname) {
 CMDF cmdNotFound(Player * p, std::string arguments)
 {
    arguments = "";
-   std::string output ("Huh?\n\r");
+   std::string output ("Huh?");
+   output + Application::NEWLINE;
    p->send(output);
    return;
 }
@@ -89,7 +96,7 @@ CMDF north(Player * p, std::string arguments)
    Exit * e = r->getExit(EXIT_NORTH);
 
    if (!e) {
-      output = "Can't go that way\n\r";
+      output = "Can't go that way." + Application::NEWLINE;
       p->send(output);
       return;
    }
@@ -108,7 +115,7 @@ CMDF south(Player * p, std::string arguments)
    Exit * e = r->getExit(EXIT_SOUTH);
 
    if (!e) {
-      output = "Can't go that way\n\r";
+      output = "Can't go that way." + Application::NEWLINE;
       p->send(output);
       return;
    }
@@ -122,7 +129,7 @@ CMDF quit(Player * p, std::string arguments)
 {
    arguments = "";
    std::string output;
-   output = "Quitting\n";
+   output = "Quitting" + Application::NEWLINE;
    p->send(output);
    p->close();
 }
@@ -136,9 +143,13 @@ CMDF look(Player * p, std::string arguments)
 CMDF say(Player * p, std::string arguments)
 {
    std::string output;
-   output = p->name() + "says '" + arguments + "'\n";
+   output  = AnsiColors::CYAN;
+   output += p->name() + " says '" + arguments + Application::NEWLINE;
+   output += AnsiColors::RESET;
    p->room()->echo(output, p);
 
-   output = "You say '" + arguments + ".'\n";
+   output  = AnsiColors::CYAN;
+   output += "You say '" + arguments + "'" + Application::NEWLINE;
+   output += AnsiColors::RESET;
    p->send(output);
 }

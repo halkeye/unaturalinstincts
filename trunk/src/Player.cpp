@@ -37,27 +37,31 @@ void Player::onRead() {
       exit(1);
       return;
    }
+   buf[ret] = '\0';
 
    _inbuf += buf;
 
-   std::string::size_type i = _inbuf.find ('\n');
+   std::string::size_type char_newline = _inbuf.find ('\n');
+   std::string::size_type char_return = _inbuf.find ('\n');
+
+   std::string::size_type i = MIN_RANGE(char_newline, char_return);
    if (i != std::string::npos)
    {
-      std::string::size_type space = _inbuf.find (' ');
+      std::string::size_type space = _inbuf.rfind (' ',i);
 
       std::string cmd;
       std::string arguments;
       if (space != std::string::npos) {
          cmd = _inbuf.substr (0, space);  /* extract first line */
          /* Need a reusable function to translate spaces -> array of args */
-         arguments = _inbuf.substr (space+1, i-1);  /* extract first line */
+         arguments = _inbuf.substr(space+1,i-space-2);
       }
       else {
          cmd = _inbuf.substr (0, i-1);  /* extract first line */
          arguments = "";
       }
 
-      _inbuf.clear();
+      _inbuf = "";
 
       // process sLine
       Command * command = Command::getCommand(cmd);

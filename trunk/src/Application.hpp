@@ -9,6 +9,10 @@
 #define MAX_RANGE(a,b) ((a)>(b)?(a):(b))
 #endif
 
+#ifndef MIN_RANGE
+#define MIN_RANGE(a,b) ((a)<(b)?(a):(b))
+#endif
+
 #if !defined(__cplusplus)
 #define CMDF void
 #else
@@ -28,6 +32,9 @@ void error(const char *,...);
 void debug(const char *,...);
 
 class Application {
+   public:
+      static std::string NEWLINE;
+
    public:
       Application(int port);
 

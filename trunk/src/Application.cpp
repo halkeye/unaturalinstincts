@@ -48,6 +48,8 @@ Application * getApplication() {
    return app;
 }
 
+std::string Application::NEWLINE = "\n\r";
+
 Room * room1, * room2;
 
 int main(int argc, char ** argv) {
