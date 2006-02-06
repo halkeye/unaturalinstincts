@@ -57,9 +57,17 @@ AC_CHECK_LIB([dl], [dlopen],
              LDADD="$LDADD -ldl",
              AC_MSG_WARN([libdl doesn't seem to be needed on this system]))
 
+AM_PATH_XML2(2.5.0,,AC_MSG_ERROR([
+            *** Libxml is required to build unaturalinstincts; Available at
+            http://www.libxml.org/.]))
+
 # Checks for library functions.
 AC_HEADER_STDC
 AC_FUNC_SELECT_ARGTYPES
+
+PKG_CHECK_MODULES(LIBXML2, libxml-2.0)
+AC_SUBST(LIBXML2_CFLAGS)
+AC_SUBST(LIBXML2_LIBS)
 
 # Check for Functions
 AC_CHECK_FUNCS([select socket])
