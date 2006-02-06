@@ -37,8 +37,6 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_HEADER_TIME
 
-AC_CANONICAL_HOST
-
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
   *-*-mingw*|*-*-cygwin*)
@@ -57,9 +55,9 @@ AC_CHECK_LIB([dl], [dlopen],
              LDADD="$LDADD -ldl",
              AC_MSG_WARN([libdl doesn't seem to be needed on this system]))
 
-AM_PATH_XML2(2.5.0,,AC_MSG_ERROR([
-            *** Libxml is required to build unaturalinstincts; Available at
-            http://www.libxml.org/.]))
+#AM_PATH_XML2(2.5.0,,AC_MSG_ERROR([
+#            *** Libxml is required to build unaturalinstincts; Available at
+#            http://www.libxml.org/.]))
 
 # Checks for library functions.
 AC_HEADER_STDC

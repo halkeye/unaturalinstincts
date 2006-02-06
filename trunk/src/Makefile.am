@@ -1,8 +1,8 @@
 bin_PROGRAMS = unaturalinstincts
 
 #AM_CXXFLAGS = -gdwarf-23 -W -Wall -pedantic -fno-inline
-AM_CXXFLAGS = -g3 -W -Wall -pedantic -fno-inline
-
+AM_CXXFLAGS = -g3 -W -Wall -pedantic -fno-inline @LIBXML2_CFLAGS@
+LIBS += @LIBXML2_LIBS@
 @WITH_CRYPT@ LIBS += -lcrypt
 
 noinst_HEADERS = Room.hpp Player.hpp Application.hpp AnsiColors.hpp Types.hpp
