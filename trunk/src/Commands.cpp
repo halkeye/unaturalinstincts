@@ -34,6 +34,14 @@ void Command::initCommands() {
       cmd->addAlias("s");
       cmds.insert(std::make_pair("south", cmd));
    }
+   {
+      cmd = new Command;
+      cmd->code("say");
+      cmd->addAlias(";");
+      cmds.insert(std::make_pair("say", cmd));
+   }
+
+
 }
      
 Command * Command::getCommand(std::string cmd)
@@ -129,5 +137,8 @@ CMDF say(Player * p, std::string arguments)
 {
    std::string output;
    output = p->name() + "says '" + arguments + "'\n";
-//   p->room()->echo(output, p);
+   p->room()->echo(output, p);
+
+   output = "You say '" + arguments + ".'\n";
+   p->send(output);
 }

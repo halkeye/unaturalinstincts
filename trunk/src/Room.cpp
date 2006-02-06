@@ -129,7 +129,7 @@ void Room::removePlayer(Player * p, bool silent) {
    }
 }
 
-void Room::echo(std::string str, const Player * playerToSkip) {
+void Room::echo(std::string str, Player * playerToSkip) const {
    Player * player;
    PLAYERLIST::const_iterator iter;
    for (iter = _charactersInRoom.begin(); iter != _charactersInRoom.end(); iter++) {
